@@ -1,0 +1,18 @@
+{
+  "name": "myexpress",
+  "version": "1.0.0",
+  "description": "simple express app",
+  "license": "ISC",
+  "author": "Aditya",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
