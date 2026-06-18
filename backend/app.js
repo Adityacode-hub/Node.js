@@ -7,12 +7,16 @@ const auth=require('./routes/api/auth');
 const questions=require('./routes/api/questions');
 const profile=require('./routes/api/profile');
 
+const passport = require('passport');
+
 const app=express();
 
 //Middleware for the bodyparser
 app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
-
+app.use(passport.initialize());
+//config for our strategy
+require("./strategies/jsonwtStrategy")(passport)
 const hostname='127.0.0.1';
 const port= process.env.PORT ||5000;
 

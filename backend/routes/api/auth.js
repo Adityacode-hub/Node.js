@@ -4,7 +4,7 @@ const bcrypt=require('bcryptjs');
 const jsonowt=require('jsonwebtoken');
 const passport=require('passport');
 const key=require('../../setup/myurl');
-
+const jwt=require("../../strategies/jsonwtStrategy");
 //@type GET
 //@route /api/auth
 //@desc just for testing
@@ -64,7 +64,76 @@ router.post("/register",(req,res)=>
 
 
 
+//@type GET
+//@route /api/auth/login
+//@desc just for login of user
+//@access PUBLIC
 
 
+router.post("/login", async (req, res) => {
+    try {
+        const email = req.body.email;
+        const password = req.body.password;
+
+        const person = await Person.findOne({ email });
+
+        if (!person) {
+            return res.status(404).json({
+                emailerror: "User not found"
+            });
+        }
+
+        const isCorrect = await bcrypt.compare(
+            password,
+            person.password
+        );
+
+        if (!isCorrect) {
+            return res.status(400).json({
+                passworderror: "Password incorrect"
+            });
+        }
+
+//jwt strategy
+
+        const payload = {
+            id: person.id,
+            name: person.name,
+            email: person.email
+        };
+
+        jwt.sign(
+            payload,
+            key.secret,//in my setupfolder
+            { expiresIn: 3600 },
+            (err, token) => {
+                if (err) throw err;
+
+                res.json({
+                    success: true,
+                    token: "Bearer " + token
+                });
+            }
+        );
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Server Error" });
+    }
+});
+
+//@type GET
+//@route /api/auth/profile
+//@desc route to user profile
+//@access PRIVATE
+
+router.get("/profile",passport.authenticate("jwt",{session:false}),(req,res)=>{
+    res.json({
+        id:req.user.id,
+        name:req.user.name,
+        email:req.user.name,
+        profilepic:req.user.profilepic
+    })
+}  )
 module.exports=router;
   
